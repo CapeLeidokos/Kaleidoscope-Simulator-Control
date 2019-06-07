@@ -10,6 +10,8 @@ keyboard running on the host system.
 
 ## Usage
 
+### Preparing the sketch
+
 Include the plugin's header somewhere at the top of your sketch.
 
 ```cpp
@@ -29,7 +31,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
 )
 ```
 
-## Activation
+### Activation
 
 The plugin is deactivated when the firmware starts. It has to be actively activated. This is done by hitting two pre-defined keys together. For the Keyboardio Model01 these two keys are pre-defined as
 the outermost upper keys on both halfs of the keyboard.
@@ -43,3 +45,24 @@ void setup() {
    ... more setup ...
 }
 ```
+
+### Generated output
+
+When enabled, the plugin sends output via the serial interface to the host. On a Linux system, 
+this output can be displayed via the command
+
+```
+cat /dev/ttyACM0
+```
+
+To drive a virtual firmware simulation, pipe the generated data stream to the simulator.
+Such a command might read similar to the following:
+
+```
+cat /dev/ttyACM0 | /tmp/kaleidoscope-my_user/sketch/9585290-any_sketch.ino/build/any_sketch.ino.elf -t
+```
+
+**Important:** For this to work it requires a virtual firmware build. 
+
+To find the name of your virtual firmware
+executable, add `VERBOSE=1` to your build command line and search for an invokation of the firmware executable with the additonal flag `-t` (which requests test function execution).
