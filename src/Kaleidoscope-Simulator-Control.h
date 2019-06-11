@@ -41,10 +41,11 @@ class SimulatorControl : public Plugin {
 
    private:
    
-      void checkEnabledToggled(byte row, byte col, uint8_t key_state);
+      bool checkEnabledToggled(byte row, byte col, uint8_t key_state);
       
    private:
       
+      bool both_keys_were_active_ = false;
       bool enabled_ = false;
       
       bool magic_switch_1_active_ = false;

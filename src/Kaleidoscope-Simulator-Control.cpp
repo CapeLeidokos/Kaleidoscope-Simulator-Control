@@ -24,7 +24,7 @@
 namespace kaleidoscope {
 namespace plugin {
    
-void SimulatorControl::checkEnabledToggled(byte row, byte col, uint8_t key_state)
+bool SimulatorControl::checkEnabledToggled(byte row, byte col, uint8_t key_state)
 {
    bool changes = false;
    
@@ -52,9 +52,19 @@ void SimulatorControl::checkEnabledToggled(byte row, byte col, uint8_t key_state
       }
    }
    
-   if(changes && (magic_switch_1_active_ && magic_switch_2_active_)) {
-      
-      enabled_ = !enabled_;
+   if(!changes) {
+      return false;
+   }
+   
+   if(magic_switch_1_active_ && magic_switch_2_active_) {
+      both_keys_were_active_ = true;
+   }
+   else if(!magic_switch_1_active_ && !magic_switch_2_active_) {
+      if(both_keys_were_active_) {
+         
+         // Toggle activation state
+         enabled_ = !enabled_;
+         both_keys_were_active_ = false;
       
 //       if(enabled_) {
 //          LEDControl::set_all_leds_to(255, 0, 0);
@@ -64,12 +74,19 @@ void SimulatorControl::checkEnabledToggled(byte row, byte col, uint8_t key_state
 //       }
 //       
 //       LEDControl::syncLeds();
+         
+         return true; // Signal that the key event can be discarded
+      }
    }
+   
+   return false;
 }
 
 EventHandlerResult SimulatorControl::onKeyswitchEvent(Key &mapped_key, byte row, byte col, uint8_t key_state)
 {
-   this->checkEnabledToggled(row, col, key_state);
+   if(this->checkEnabledToggled(row, col, key_state)) { 
+      return EventHandlerResult::OK;
+   }
    
    if(!enabled_) { 
       return EventHandlerResult::OK;
