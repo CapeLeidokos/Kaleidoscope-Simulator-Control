@@ -118,6 +118,10 @@ EventHandlerResult SimulatorControl::beforeEachCycle()
    }
    Focus.sendRaw("\n");
    
+   // Make sure that cycles don't run too fast
+   //
+   delay(1);
+   
    return EventHandlerResult::OK;
 }
 
